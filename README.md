@@ -1,4 +1,4 @@
-# 70mai A800S Firmware Kitchen (English)
+# 70mai A800S (DR2800) Firmware Kitchen (English version)
 
 This repository provides a small set of shell scripts to **unpack, patch and repack** a 70mai A800S (DR2800) firmware image.
 
