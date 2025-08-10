@@ -233,7 +233,14 @@ Put firmware file FW_DR2800.bin and a FORCEUPD.txt textfile on SD card root. Pow
 - Some images translated
 - Minor fixes to hyphenation and abbreviations
 
+---
 
+## Useful links
+
+> Optional SD autorun (from older custom builds)
+> Some A800S custom firmware variants (e.g. 350d’s builds) support executing autorun_*.sh from the SD card on boot.
+> This base does not document SD-autorun; use init.d and /customize instead. If you need SD-autorun, port the hook from earlier builds (check rcS/init.d).
+* https://github.com/350d/70Mai_A800S_Firmware
 
 ---
 
