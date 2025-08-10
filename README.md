@@ -183,6 +183,14 @@ sudo apt-get install -y bash coreutils util-linux binwalk p7zip-full   squashfs-
 
 ---
 
+## Obtaining modded firmware
+
+https://4pda.to/forum/index.php?showtopic=994524&st=10540#entry115644824
+or
+https://4pda.to/forum/index.php?showtopic=994524
+
+---
+
 ## Installing new firmware
 
 Put firmware file FW_DR2800.bin and a FORCEUPD.txt textfile on SD card root. Power up your device. Wait till reboot.
