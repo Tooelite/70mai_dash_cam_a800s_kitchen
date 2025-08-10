@@ -183,6 +183,12 @@ sudo apt-get install -y bash coreutils util-linux binwalk p7zip-full   squashfs-
 
 ---
 
+## Installing new firmware
+
+Put firmware file FW_DR2800.bin and a FORCEUPD.txt textfile on SD card root. Power up your device. Wait till reboot.
+
+---
+
 ## Contributing
 
 - Keep English docs clear and technical; prefer accuracy over brevity.  
