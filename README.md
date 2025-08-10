@@ -189,7 +189,7 @@ Put firmware file FW_DR2800.bin and a FORCEUPD.txt textfile on SD card root. Pow
 
 ---
 
-## Base Mod Changelog this repo is basedon 
+## Base Mod Changelog this repo is based on 
 
 ### 2025-05-06
 
