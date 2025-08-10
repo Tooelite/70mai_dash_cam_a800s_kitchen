@@ -1,6 +1,11 @@
-# Kitchen
-в 0.0.0_example/origin кладем оригинальную прошивку.
+# Kitchen tools für 70mai a800s firmware
 
-находясь в 0.0.0_example запускаем последовательно ../1mount.sh, ../3patch.sh, ../6pack.sh
+Place the original firmware into `0.0.0_example/origin`.
 
-в 0.0.0_example/out получаем пропатченную прошивку.
+While inside the `0.0.0_example` directory, run the following scripts in order:
+
+```bash
+../1mount.sh
+../3patch.sh
+../6pack.sh
+
