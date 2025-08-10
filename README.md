@@ -34,13 +34,109 @@ README.md
 
 ## Prerequisites
 
-Linux or **Windows 10/11 with WSL2 (Ubuntu)**.
+Tested on **Debian 13** and **Windows 10/11 WSL2 (Ubuntu)**.
 
-**Tools (install on Ubuntu/WSL):**
+Install base tools:
 ```bash
 sudo apt-get update
-sudo apt-get install -y bash coreutils util-linux binwalk p7zip-full   squashfs-tools gzip xz-utils tar grep sed awk dos2unix
+sudo apt-get install -y   bash util-linux grep sed gawk tar gzip xz-utils cpio   p7zip-full binwalk squashfs-tools dos2unix   build-essential pkg-config libfuse-dev
 ```
+
+> `libfuse-dev` is required to build **littlefs-fuse** (the `lfs` userspace tool).
+> Ensure `/sbin:/usr/sbin` are in your `PATH` (for `losetup`/`mount`):
+```bash
+echo 'export PATH="/sbin:/usr/sbin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+Optional (useful for analysis/edge cases):
+```bash
+sudo apt-get install -y sleuthkit fdisk parted qemu-utils
+# depending on your kitchen:
+sudo apt-get install -y xdelta3 u-boot-tools openssl libarchive-zip-perl
+```
+
+After cloning:
+```bash
+chmod +x tools/*.sh || true
+./tools/check-deps.sh
+```
+
+### LittleFS Support (misc.es Mount)
+
+The `misc.es` partition on the A800S firmware is formatted with **LittleFS**.  
+You need a userspace tool to mount it — either:
+
+- **`lfs`** binary (standalone LittleFS tool, as used in this repo), or  
+- **`littlefs-fuse`** (FUSE-based mount helper)
+
+### Option 1 — Using provided `lfs` binary
+
+If you already have the `lfs` binary built (e.g., from `littlefs-fuse` sources), simply copy it to a location in your `$PATH`:
+
+```bash
+sudo cp lfs /usr/local/bin/
+sudo chmod +x /usr/local/bin/lfs
+```
+
+After this, `1mount.sh` will detect and use it automatically.
+
+---
+
+### Option 2 — Building from `littlefs-fuse` source
+
+Install build dependencies:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y build-essential pkg-config libfuse-dev
+```
+
+Clone and build:
+
+```bash
+git clone https://github.com/osamy/littlefs-fuse.git
+cd littlefs-fuse
+make
+```
+
+This produces a binary named `lfs` in the repo root. Install it:
+
+```bash
+sudo cp lfs /usr/local/bin/
+sudo chmod +x /usr/local/bin/lfs
+```
+
+### Notes
+
+- The kitchen expects **LittleFS** for `misc.es`. Build or install a userspace tool:
+  - Build `lfs` from `littlefs-fuse` with `libfuse-dev` (FUSE2) and copy to `/usr/local/bin/`.
+  - Or install `littlefs-fuse` if your distro provides a package.
+- `1mount.sh` will prefer `lfs` and fall back to `littlefs-fuse` if present.
+
+---
+
+### Mount behavior
+
+- `1mount.sh` will mount `misc.es` using `lfs` with the following parameters:
+
+```
+block_size=131072
+block_cycles=500
+read_size=2048
+prog_size=2048
+cache_size=131072
+block_count=11
+lookahead_size=8
+```
+
+- Debug output from `lfs` is redirected to `misc.dir.mount.log`.
+- To unmount manually:
+
+```bash
+fusermount3 -u misc.dir 2>/dev/null || fusermount -u misc.dir
+```
+---
 
 **Optional (handy for analysis/edge cases):**
 ```bash
@@ -151,42 +247,10 @@ Before flashing on device:
 
 ---
 
-## Helper scripts
-
-Create `tools/check-deps.sh` to validate your environment:
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-req=(bash coreutils awk sed grep dd losetup binwalk 7z unsquashfs mksquashfs)
-miss=()
-for c in "${req[@]}"; do
-  if ! command -v "$c" >/dev/null 2>&1; then miss+=("$c"); fi
-done
-if ((${#miss[@]})); then
-  echo "Missing: ${miss[*]}" >&2
-  exit 1
-fi
-echo "All required tools found."
-```
-
-Create `tools/install-deps.sh` (Ubuntu/WSL):
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-sudo apt-get update
-sudo apt-get install -y bash coreutils util-linux binwalk p7zip-full   squashfs-tools gzip xz-utils tar grep sed awk dos2unix
-```
-
-> Make both scripts executable: `chmod +x tools/*.sh`
-
----
-
 ## Obtaining modded firmware
 
-https://4pda.to/forum/index.php?showtopic=994524&st=10540#entry115644824
-or
+https://4pda.to/forum/index.php?showtopic=994524&st=10540#entry115644824  
+or  
 https://4pda.to/forum/index.php?showtopic=994524
 
 ---
@@ -237,8 +301,8 @@ Put firmware file FW_DR2800.bin and a FORCEUPD.txt textfile on SD card root. Pow
 
 ## Useful links
 
-> Optional SD autorun (from older custom builds)
-> Some A800S custom firmware variants (e.g. 350d’s builds) support executing autorun_*.sh from the SD card on boot.
+> Optional SD autorun (from older custom builds)  
+> Some A800S custom firmware variants (e.g. 350d’s builds) support executing autorun_*.sh from the SD card on boot.  
 > This base does not document SD-autorun; use init.d and /customize instead. If you need SD-autorun, port the hook from earlier builds (check rcS/init.d).
 * https://github.com/350d/70Mai_A800S_Firmware
 
